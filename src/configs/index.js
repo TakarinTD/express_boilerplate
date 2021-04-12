@@ -15,7 +15,8 @@ const { A_WEEK } = require('../constants');
 
 module.exports = {
   PORT: PORT || 3000,
-  MONGO_URI: `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin`,
+  // MONGO_URI: `mongodb+srv://datatool:datatool@datatool.d1kpi.mongodb.net/DataTool?authSource=admin&retryWrites=true&w=majority`,
+  MONGO_URI: `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin&replicaSet=atlas-11xac4-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true`,
   JWT_SECRET_KEY,
   JWT_EXPIRES_TIME: parseInt(JWT_EXPIRES_TIME, 10) || A_WEEK,
 };
