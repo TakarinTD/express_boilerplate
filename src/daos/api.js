@@ -6,9 +6,18 @@ const Api = require('../models/api');
 const findAll = async () => {
   return Api.find();
 };
+const createApi = async ({ name, apiId, dataStructure, schema }) => {
+  const api = await Api.create({
+    name,
+    apiId,
+    dataStructure,
+    schema,
+  });
+  return api;
+};
 const findApi = async (condition) => {
   if (ObjectId.isValid(condition)) {
-    const api = await Api.findById(condition);
+    const api = await Api.findById(condition).lean();
     return api;
   }
 
@@ -19,4 +28,19 @@ const findApi = async (condition) => {
   return null;
 };
 
-module.exports = { findApi, findAll };
+const getListApiId = async () => {
+  const listApi = await Api.find();
+  const listApiId = listApi.reduce((acc, cur) => {
+    return [...acc, cur.apiId];
+  }, []);
+  return listApiId;
+};
+
+const updateApi = async (id, updateFields) => {
+  const api = await Api.findByIdAndUpdate(id, updateFields, {
+    new: false,
+  });
+  return api;
+};
+
+module.exports = { findApi, findAll, createApi, getListApiId, updateApi };

@@ -43,6 +43,9 @@ const transformObjectId = (obj) => {
 
 const snakecaseRes = () => {
   return mung.json((body, req, res) => {
+    if (body.notSnakeCase) {
+      return body;
+    }
     return snakecaseKeys(transformObjectId(body), {
       deep: true,
     });

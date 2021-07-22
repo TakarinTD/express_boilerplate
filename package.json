@@ -24,7 +24,8 @@
     "mongoose": "^5.9.25",
     "morgan": "^1.10.0",
     "readline-sync": "^1.4.10",
-    "snakecase-keys": "^3.2.0"
+    "snakecase-keys": "^3.2.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "eslint": "^7.5.0",

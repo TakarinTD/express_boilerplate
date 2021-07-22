@@ -1,41 +1,66 @@
-const axios = require('axios');
 const CustomError = require('../errors/CustomError');
-const errorCodes = require('../errors/code');
+const code = require('../errors/code');
 const apiDao = require('../daos/api');
 
-const getApi = async (condition) => {
-  const api = await apiDao.findApi({ apiId: condition });
-  if (!api) throw new CustomError(errorCodes.NOT_FOUND);
-
-  if (Object.keys(api.params).length) {
-    console.log(api);
-    Object.keys(api.params).forEach((key) => {
-      api.params[key] = api.params[key].data;
-    });
-    console.log(api);
-    const result = await axios({
-      method: api.method,
-      url: `http://${api.link}`,
-      params: api.params,
-    });
-    return result.data;
+const getApi = async ({ apiId, listQuery }) => {
+  const api = await apiDao.findApi({ apiId });
+  if (!api) {
+    return null;
   }
-  if (Object.keys(api.body).length !== 0) {
-    Object.keys(api.body).forEach((key) => {
-      api.body[key] = api.body[key].data;
+  let { schema } = api;
+  let keyExist;
+  if (Object.keys(listQuery).length) {
+    Object.keys(listQuery).map((key) => {
+      if (key === 'key') {
+        keyExist = listQuery.key;
+        return schema;
+      }
+      schema = schema.reduce((acc, cur) => {
+        if (
+          Object.prototype.hasOwnProperty.call(cur, key) &&
+          cur[key] === listQuery[key]
+        ) {
+          return [...acc, cur];
+        }
+        return [...acc];
+      }, []);
+      return schema;
     });
-    const result = await axios({
-      method: api.method,
-      url: `http://${api.link}`,
-      data: api.body,
-    });
-    return result.data;
+    if (keyExist) {
+      const result = schema.map((item) => {
+        return item[keyExist];
+      });
+      return result;
+    }
+    const result = schema;
+    return result;
   }
-  const result = await axios({
-    method: api.method,
-    url: `http://${api.link}`,
-  });
-  return result.data;
+  const result = api;
+  return result;
 };
 
-module.exports = { getApi };
+const createApi = async ({ name, apiId, dataStructure, schema }) => {
+  const api = await apiDao.createApi({
+    name,
+    apiId,
+    dataStructure,
+    schema,
+  });
+
+  return api;
+};
+
+const getApis = async () => {
+  const listApi = await apiDao.findAll();
+  return listApi;
+};
+
+const updateApi = async (id, updateFields) => {
+  const apiExist = await apiDao.findApi(id);
+  if (!apiExist) {
+    throw new CustomError(code.BAD_REQUEST, 'Api is not exists');
+  }
+  const api = await apiDao.updateApi(id, updateFields);
+  return api;
+};
+module.exports = { getApi, createApi, getApis, updateApi };

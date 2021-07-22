@@ -4,10 +4,8 @@ const apiSchema = new mongoose.Schema(
   {
     name: String,
     apiId: String,
-    link: String,
-    method: String,
-    body: Object,
-    params: Object,
+    dataStructure: Object,
+    schema: Array,
   },
   {
     timestamps: true,
